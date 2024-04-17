@@ -41,7 +41,7 @@ on variety of operating systems.
 | Option             | Management group | Description |
 |------------------- | ---------------- | ----------- |
 | `debug` | ALL | output debugging information via syslog(3); note, that the debugging is heavy, including passwords! |
-| `secret` | ALL | *string* can be specified more than once; secret key used to encrypt/decrypt packets sent/received from the server |
+| `secret` | ALL | *string* can be specified more than once; secret key used to encrypt/decrypt packets sent/received from the server. Must be specified after *server* option! |
 | `server` | auth, session | *string* hostname, IP or hostname:port, can be specified more than once |
 | `timeout` | ALL | *integer* connection timeout in seconds; default is 5 seconds |
 | `login` | auth | TACACS+ authentication service, this can be *pap*, *chap* or *login*; default is *pap* |

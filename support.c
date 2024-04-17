@@ -265,12 +265,15 @@ static void set_tac_srv_addr(unsigned int srv_no, const struct addrinfo *addr)
 
 static void set_tac_srv_key(unsigned int srv_no, const char *key)
 {
-    if (srv_no < TAC_PLUS_MAXSERVERS)
+    if ((srv_no < TAC_PLUS_MAXSERVERS) && strlen(tac_srv_key[srv_no]) == 0)
     {
         if (key)
         {
             strncpy(tac_srv_key[srv_no], key, TAC_SECRET_MAX_LEN - 1);
-            tac_srv[srv_no].key = tac_srv_key[srv_no];
+            for (int i = srv_no; (i >= 0) && (tac_srv[i].key == NULL); --i)
+            {
+                tac_srv[i].key = tac_srv_key[srv_no];
+            }
         }
         else
         {
@@ -288,6 +291,7 @@ int _pam_parse(int argc, const char **argv)
 
     /* otherwise the list will grow with each call */
     memset(tac_srv, 0, sizeof(tacplus_server_t) * TAC_PLUS_MAXSERVERS);
+    memset(tac_srv_key, 0, sizeof(char) * TAC_PLUS_MAXSERVERS * (TAC_SECRET_MAX_LEN + 1));
     memset(&tac_srv_addr, 0, sizeof(struct addrinfo) * TAC_PLUS_MAXSERVERS);
     memset(&tac_sock_addr, 0, sizeof(struct sockaddr) * TAC_PLUS_MAXSERVERS);
     memset(&tac_sock6_addr, 0, sizeof(struct sockaddr_in6) * TAC_PLUS_MAXSERVERS);
@@ -376,7 +380,6 @@ int _pam_parse(int argc, const char **argv)
                          server != NULL && tac_srv_no < TAC_PLUS_MAXSERVERS; server = server->ai_next)
                     {
                         set_tac_srv_addr(tac_srv_no, server);
-                        set_tac_srv_key(tac_srv_no, current_secret);
                         tac_srv_no++;
                     }
                     _pam_log(LOG_DEBUG, "%s: server index %d ", __FUNCTION__, tac_srv_no);
